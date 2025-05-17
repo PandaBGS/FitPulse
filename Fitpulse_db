@@ -1,0 +1,28 @@
+CREATE DATABASE fitpulse_db;
+USE fitpulse_db;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE,
+    password VARCHAR(255),
+    email VARCHAR(100)
+);
+
+CREATE TABLE schedules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    activity VARCHAR(100),
+    date DATE,
+    time TIME,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE progress (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    activity VARCHAR(100),
+    duration INT, -- dalam menit
+    date DATE,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
