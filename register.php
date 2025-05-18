@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $_SESSION['password'] = $password;
 
     // Redirect ke halaman personal_info.php
-    header("Location: personal_info.php");
+    header("Location: index.php");
     exit();
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
