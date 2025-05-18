@@ -4,6 +4,19 @@ require_once 'config.php';
 
 $errors = [];
 
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Ambil data dari form
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Simpan data ke session (bisa diganti ke database jika diperlukan)
+    $_SESSION['email'] = $email;
+    $_SESSION['password'] = $password;
+
+    // Redirect ke halaman personal_info.php
+    header("Location: personal_info.php");
+    exit();
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
