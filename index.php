@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: landing.php');
+    header('Location: login.php');
     exit;
 }
 $username = $_SESSION['username'];
@@ -16,54 +16,80 @@ $username = $_SESSION['username'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-r from-blue-600 to-purple-700 font-sans min-h-screen flex flex-col">
-    <header class="bg-gradient-to-r from-indigo-700 to-purple-800 text-white p-6 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-3xl font-extrabold">Fitpulse</h1>
-            <nav>
-                <ul class="flex space-x-8 text-lg font-semibold">
-                    <li><a href="index.php" class="hover:underline underline decoration-yellow-400 decoration-4">Beranda</a></li>
-                    <li><a href="schedule.php" class="hover:underline">Jadwal</a></li>
-                    <li><a href="recommendations.php" class="hover:underline">Rekomendasi</a></li>
-                    <li><a href="progress.php" class="hover:underline">Progres</a></li>
-                    <li><a href="profile.php" class="hover:underline">Profil</a></li>
-                    <li><a href="logout.php" class="hover:underline">Keluar</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-    <main class="container mx-auto flex-grow p-10 max-w-5xl">
-        <section class="max-w-5xl mx-auto">
-            <h2 class="text-4xl font-extrabold mb-6 text-white">Selamat datang, <?=htmlspecialchars($username)?>!</h2>
-            <p class="text-xl text-gray-300 mb-10 max-w-3xl">
-                Gunakan menu di atas untuk mengakses fitur seperti perencanaan jadwal latihan, rekomendasi olahraga, pelacakan progres, dan pengelolaan profil pengguna.
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <a href="schedule.php" class="block p-8 bg-white rounded-3xl shadow-lg hover:shadow-2xl transition text-center">
-                    <i class="fas fa-calendar-alt text-6xl text-blue-600 mb-6"></i>
-                    <h3 class="text-2xl font-extrabold mb-3">Jadwal Latihan</h3>
-                    <p class="text-lg text-gray-700">Rencanakan dan kelola jadwal latihan Anda.</p>
-                </a>
-                <a href="recommendations.php" class="block p-8 bg-white rounded-3xl shadow-lg hover:shadow-2xl transition text-center">
-                    <i class="fas fa-lightbulb text-6xl text-yellow-500 mb-6"></i>
-                    <h3 class="text-2xl font-extrabold mb-3">Rekomendasi Latihan</h3>
-                    <p class="text-lg text-gray-700">Dapatkan saran latihan yang sesuai dengan profil Anda.</p>
-                </a>
-                <a href="progress.php" class="block p-8 bg-white rounded-3xl shadow-lg hover:shadow-2xl transition text-center">
-                    <i class="fas fa-chart-line text-6xl text-green-600 mb-6"></i>
-                    <h3 class="text-2xl font-extrabold mb-3">Pelacakan Progres</h3>
-                    <p class="text-lg text-gray-700">Pantau perkembangan latihan Anda dari waktu ke waktu.</p>
-                </a>
-                <a href="profile.php" class="block p-8 bg-white rounded-3xl shadow-lg hover:shadow-2xl transition text-center">
-                    <i class="fas fa-user-cog text-6xl text-gray-700 mb-6"></i>
-                    <h3 class="text-2xl font-extrabold mb-3">Profil Pengguna</h3>
-                    <p class="text-lg text-gray-700">Kelola data pribadi dan preferensi olahraga Anda.</p>
-                </a>
+<body class="bg-blue-500 text-white">
+
+    <div class="bg-[#A1D6A5] p-6 text-center">
+        <h1 class="text-4xl font-bold">Welcome to <span class="text-blue-500">FITPULSE</span></h1>
+        <p class="text-lg">Your rhythm to a healthier life</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto py-8">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="w-16 h-16 bg-gray-300 rounded-full"></div>
+                <h2 class="ml-4 text-lg">John Doe</h2>
+                <button class="ml-2 bg-green-400 text-blue-500 py-1 px-3 rounded">Edit Profile</button>
             </div>
-        </section>
-    </main>
-    <footer class="bg-indigo-900 text-center p-6 text-sm text-gray-400">
-        &copy; 2024 Fitpulse. All rights reserved.
-    </footer>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-4">Schedule Your Workout</h2>
+            <input type="date" class="mr-2 rounded p-2" placeholder="Select date">
+            <input type="text" class="mr-2 rounded p-2" placeholder="What's the Exercise?">
+            <button class="bg-green-400 text-blue-500 py-2 px-4 rounded">Save</button>
+        </div>
+
+        <h2 class="text-2xl font-bold mb-4">Recommended Workouts</h2>
+        <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="bg-blue-300 p-4 rounded">
+                <h3 class="font-bold">HIIT Workout</h3>
+                <p>30 mins</p>
+            </div>
+            <div class="bg-blue-300 p-4 rounded">
+                <h3 class="font-bold">Yoga Flow</h3>
+                <p>45 mins</p>
+            </div>
+            <div class="bg-blue-300 p-4 rounded">
+                <h3 class="font-bold">Strength Training</h3>
+                <p>60 mins</p>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-4">Log Your Workout</h2>
+            <input type="text" class="mb-2 w-full rounded p-2" placeholder="Workout Type (e.g. Running, Weightlifting)">
+            <input type="text" class="mb-2 w-full rounded p-2" placeholder="Duration (e.g. 45 mins)">
+            <div class="flex justify-between">
+                <button class="bg-gray-500 text-white py-2 px-4 rounded">Cancel</button>
+                <button class="bg-green-400 text-blue-500 py-2 px-4 rounded">Save Workout</button>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold mb-4">Recent Workouts</h2>
+        <div class="flex justify-between mb-8">
+            <div class="bg-blue-300 p-4 rounded w-1/3">
+                <h3 class="font-bold">Strength Training</h3>
+                <p>60 mins</p>
+            </div>
+            <div class="bg-blue-300 p-4 rounded w-1/3">
+                <h3 class="font-bold">Running</h3>
+                <p>45 mins</p>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold mb-4">Community Updates</h2>
+        <div class="bg-blue-300 p-4 rounded mb-8">
+            <h3 class="font-bold">FitnessFanatic</h3>
+            <p>Finished a great workout today! Feeling pumped 💪</p>
+        </div>
+        
+        <footer class="text-center text-sm">
+            <p>© Fitpulse 2025 <span class="mx-2">|</span> <a href="#" class="text-green-400">Privacy Policy</a> <span class="mx-2">|</span> <a href="#" class="text-green-400">Terms of Service</a></p>
+        </footer>
+    </div>
+
+</body>
+</html>
+
 </body>
 </html>
