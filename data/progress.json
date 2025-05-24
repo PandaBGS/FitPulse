@@ -5,5 +5,12 @@
         "log_date": "2025-05-05",
         "progress": "Latihan Jogging pada 2025-05-05 pukul 15:00 telah dilakukan.",
         "created_at": "2025-05-18T13:09:53+02:00"
+    },
+    {
+        "id": "683247b304e43",
+        "user_id": "6814cce62030a",
+        "log_date": "2025-05-25",
+        "progress": "Latihan makan maros selama 2 menit telah dilakukan.",
+        "created_at": "2025-05-25T00:26:59+02:00"
     }
 ]
