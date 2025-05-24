@@ -1,20 +1,82 @@
 <?php
 session_start();
+require_once 'config.php'; // Include config.php for readData/writeData and file paths
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $_SESSION['name'] = $_POST['name'];
-  $_SESSION['age'] = $_POST['age'];
-  $_SESSION['gender'] = $_POST['gender'];
-  $_SESSION['weight'] = $_POST['weight'];
-  $_SESSION['height'] = $_POST['height'];
-  $_SESSION['email'] = $_POST['email'];
-  $_SESSION['password'] = $_POST['password'];
-  $_SESSION['phone'] = $_POST['phone'];
-  $_SESSION['fitness'] = $_POST['fitness'];
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
 }
 
-// Default value
-$name_display = isset($_SESSION['name']) && $_SESSION['name'] != "" ? $_SESSION['name'] : "Username";
+$user_id = $_SESSION['user_id'];
+$errors = [];
+$success = '';
+
+// Load user data
+$users = readData(USERS_FILE);
+$user_data = null;
+$user_index = -1;
+foreach ($users as $index => $u) {
+    if ($u['id'] === $user_id) {
+        $user_data = $u;
+        $user_index = $index;
+        break;
+    }
+}
+
+// If user data not found (shouldn't happen if session is set), redirect
+if (!$user_data) {
+    header('Location: logout.php'); // Or an error page
+    exit;
+}
+
+// Handle form submission to update profile
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $user_data['username'] = trim($_POST['name'] ?? $user_data['username']); // Using 'name' field for username
+    $user_data['email'] = trim($_POST['email'] ?? $user_data['email']);
+    $user_data['fitness_level'] = $_POST['fitness_level'] ?? $user_data['fitness_level'];
+    $user_data['preferences'] = json_encode([ // Storing other details in 'preferences' for simplicity with current schema
+        'age' => $_POST['age'] ?? '',
+        'gender' => $_POST['gender'] ?? '',
+        'weight' => $_POST['weight'] ?? '',
+        'height' => $_POST['height'] ?? '',
+        'phone' => $_POST['phone'] ?? ''
+    ]);
+    $user_data['updated_at'] = date('c');
+
+    // Password handling (only update if provided and valid)
+    if (!empty($_POST['password'])) {
+        // In a real application, you'd also want to ask for current password before changing
+        $new_password = $_POST['password'];
+        // You might want to add password strength validation here
+        $user_data['password_hash'] = password_hash($new_password, PASSWORD_DEFAULT);
+    }
+
+    // Update the user data in the array
+    $users[$user_index] = $user_data;
+    writeData(USERS_FILE, $users); // Save updated data to JSON file
+
+    // Update session username if it changed
+    $_SESSION['username'] = $user_data['username'];
+
+    $success = 'Profil berhasil diperbarui.';
+
+    // In a database scenario, you would execute an UPDATE query here:
+    // $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, password_hash = ?, fitness_level = ?, preferences = ?, updated_at = NOW() WHERE id = ?");
+    // $stmt->execute([$user_data['username'], $user_data['email'], $user_data['password_hash'], $user_data['fitness_level'], $user_data['preferences'], $user_id]);
+}
+
+// Extract details from preferences for form display
+$preferences_decoded = json_decode($user_data['preferences'] ?? '{}', true);
+$age_display = $preferences_decoded['age'] ?? '';
+$gender_display = $preferences_decoded['gender'] ?? '';
+$weight_display = $preferences_decoded['weight'] ?? '';
+$height_display = $preferences_decoded['height'] ?? '';
+$phone_display = $preferences_decoded['phone'] ?? '';
+
+$name_display = htmlspecialchars($user_data['username'] ?? 'Username');
+$email_display = htmlspecialchars($user_data['email'] ?? '');
+$fitness_level_display = htmlspecialchars($user_data['fitness_level'] ?? 'beginner');
+
 ?>
 
 <!DOCTYPE html>
@@ -68,6 +130,12 @@ $name_display = isset($_SESSION['name']) && $_SESSION['name'] != "" ? $_SESSION[
       border-radius: 50%;
       margin-bottom: 20px;
       display: inline-block;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      font-weight: bold;
+      color: #3BAFDA;
     }
 
     .form-section {
@@ -188,56 +256,63 @@ $name_display = isset($_SESSION['name']) && $_SESSION['name'] != "" ? $_SESSION[
 
   <div class="container">
     <div class="profile-pic-section">
-      <div class="profile-pic"></div>
-      <h2><?= htmlspecialchars($name_display); ?></h2>
+      <div class="profile-pic"><?= strtoupper(substr($name_display, 0, 2)) ?></div>
+      <h2><?= $name_display ?></h2>
       <button class="save-button" style="width: auto; padding: 8px 16px; background-color: white; color: #3BAFDA; border: 2px solid #3BAFDA;">Customize Profile Picture</button>
     </div>
 
     <a href="index.php" class="back-button">← Back to Home</a>
 
     <form class="form-section" method="POST" action="">
+      <?php if ($success): ?>
+        <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+          <?= htmlspecialchars($success) ?>
+        </div>
+      <?php endif; ?>
+
       <label>Name</label>
-      <input type="text" name="name" value="<?= $_SESSION['name'] ?? '' ?>" placeholder="Enter your name" />
+      <input type="text" name="name" value="<?= $name_display ?>" placeholder="Enter your name" required />
 
       <label>Age</label>
-      <input type="number" name="age" value="<?= $_SESSION['age'] ?? '' ?>" placeholder="Enter your age" />
+      <input type="number" name="age" value="<?= htmlspecialchars($age_display) ?>" placeholder="Enter your age" />
 
       <label>Gender</label>
       <select name="gender">
-        <option value="Man" <?= (($_SESSION['gender'] ?? '') == 'Man') ? 'selected' : '' ?>>Man</option>
-        <option value="Woman" <?= (($_SESSION['gender'] ?? '') == 'Woman') ? 'selected' : '' ?>>Woman</option>
+        <option value="Man" <?= ($gender_display == 'Man') ? 'selected' : '' ?>>Man</option>
+        <option value="Woman" <?= ($gender_display == 'Woman') ? 'selected' : '' ?>>Woman</option>
+        <option value="Other" <?= ($gender_display == 'Other') ? 'selected' : '' ?>>Other</option>
       </select>
 
       <label>Weight (kg)</label>
-      <input type="number" name="weight" value="<?= $_SESSION['weight'] ?? '' ?>" placeholder="Enter your weight" />
+      <input type="number" name="weight" value="<?= htmlspecialchars($weight_display) ?>" placeholder="Enter your weight" />
 
       <label>Height (cm)</label>
-      <input type="number" name="height" value="<?= $_SESSION['height'] ?? '' ?>" placeholder="Enter your height" />
+      <input type="number" name="height" value="<?= htmlspecialchars($height_display) ?>" placeholder="Enter your height" />
 
       <label>E-Mail</label>
-      <input type="email" name="email" value="<?= $_SESSION['email'] ?? '' ?>" placeholder="Enter your e-mail" />
+      <input type="email" name="email" value="<?= $email_display ?>" placeholder="Enter your e-mail" required />
 
       <label>Password</label>
-      <input type="password" name="password" value="<?= $_SESSION['password'] ?? '' ?>" placeholder="Your password" />
+      <input type="password" name="password" value="" placeholder="Leave blank to keep current password" />
 
       <label>Phone Number (Optional)</label>
-      <input type="text" name="phone" value="<?= $_SESSION['phone'] ?? '' ?>" placeholder="+62" />
+      <input type="text" name="phone" value="<?= htmlspecialchars($phone_display) ?>" placeholder="+62" />
 
     <div class="fitness-level">
       <label>Fitness Level</label>
       <div class="fitness-options">
-        <input type="radio" name="fitness_level" id="beginner" value="Beginner" hidden>
+        <input type="radio" name="fitness_level" id="beginner" value="beginner" <?= ($fitness_level_display == 'beginner') ? 'checked' : '' ?> hidden>
         <label for="beginner" class="fitness-card">Beginner</label>
 
-        <input type="radio" name="fitness_level" id="intermediate" value="Intermediate" hidden>
+        <input type="radio" name="fitness_level" id="intermediate" value="intermediate" <?= ($fitness_level_display == 'intermediate') ? 'checked' : '' ?> hidden>
         <label for="intermediate" class="fitness-card">Intermediate</label>
 
-        <input type="radio" name="fitness_level" id="experienced" value="Experienced" hidden>
-        <label for="experienced" class="fitness-card">Experienced</label>
+        <input type="radio" name="fitness_level" id="advanced" value="advanced" <?= ($fitness_level_display == 'advanced') ? 'checked' : '' ?> hidden>
+        <label for="advanced" class="fitness-card">Advanced</label>
       </div>
     </div>
 
-      <button type="submit" class="save-button">Save</button>
+      <button type="submit" class="save-button">Save Changes</button>
     </form>
   </div>
 
