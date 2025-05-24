@@ -92,31 +92,56 @@ usort($schedules, function ($a, $b) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Jadwal Latihan - Fitpulse</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@900&family=Roboto:wght@700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .welcome-text {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            font-size: 40px;
+            line-height: 48px;
+            letter-spacing: 0%;
+            text-align: center;
+            color: rgba(255 255 255 / 0.9);
+        }
+        .fitpulse-text {
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 40px;
+            line-height: 48px;
+            letter-spacing: 0.07em; /* 7% letter spacing */
+            text-align: center;
+            color: rgba(255 255 255 / 0.9);
+        }
+        .subtitle-text {
+            font-size: 16px;
+            line-height: 1.5;
+            color: rgba(255 255 255 / 0.8);
+            text-align: center;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
-    <header class="bg-blue-600 text-white p-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Fitpulse</h1>
-            <nav>
-                <ul class="flex space-x-6">
-                    <li><a href="index.php" class="hover:underline">Beranda</a></li>
-                    <li><a href="schedule.php" class="hover:underline font-semibold underline">Jadwal</a></li>
-                    <li><a href="recommendations.php" class="hover:underline">Rekomendasi</a></li>
-                    <li><a href="progress.php" class="hover:underline">Progres</a></li>
-                    <li><a href="profile.php" class="hover:underline">Profil</a></li>
-                    <li><a href="logout.php" class="hover:underline">Keluar</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-    <main class="container mx-auto flex-grow p-6 max-w-4xl">
-        <h2 class="text-3xl font-semibold mb-6">Jadwal Latihan</h2>
+<body class="bg-[#3CA7CB] text-white min-h-screen flex flex-col">
+    <div class="bg-[#3CA7CB] h-6 w-full"></div>
 
+    <header class="bg-[#acd696b3] w-full py-6 flex flex-col items-center shadow-md relative">
+        <p class="welcome-text">
+            Jadwal Latihan
+        </p>
+        <p class="subtitle-text">Atur Waktu Latihanmu</p>
+        <a href="index.php" class="absolute top-4 left-4 bg-white text-[#3CA7CB] py-1.5 px-4 rounded-md text-sm font-semibold hover:bg-gray-100 transition">
+            <i class="fas fa-arrow-left mr-2"></i>Kembali ke Beranda
+        </a>
+    </header>
+
+    <main class="container mx-auto flex-grow p-6 max-w-4xl text-gray-800">
         <?php if ($errors): ?>
-            <div class="mb-4 text-red-600">
+            <div class="mb-4 text-red-600 bg-red-100 p-3 rounded">
                 <ul>
                     <?php foreach ($errors as $error): ?>
                         <li><i class="fas fa-exclamation-circle mr-2"></i><?=htmlspecialchars($error)?></li>
@@ -124,83 +149,86 @@ usort($schedules, function ($a, $b) {
                 </ul>
             </div>
         <?php elseif ($success): ?>
-            <div class="mb-4 text-green-600">
+            <div class="mb-4 text-green-600 bg-green-100 p-3 rounded">
                 <i class="fas fa-check-circle mr-2"></i><?=htmlspecialchars($success)?>
             </div>
         <?php endif; ?>
 
         <form method="POST" action="schedule.php" class="mb-8 bg-white p-6 rounded shadow">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Tambah Jadwal Baru</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label for="workout_date" class="block mb-1 font-semibold">Tanggal</label>
-                    <input type="date" id="workout_date" name="workout_date" required class="w-full border border-gray-300 rounded px-3 py-2" value="<?=htmlspecialchars($_POST['workout_date'] ?? '')?>" />
+                    <input type="date" id="workout_date" name="workout_date" required class="w-full border border-gray-300 rounded px-3 py-2 text-gray-800" value="<?=htmlspecialchars($_POST['workout_date'] ?? '')?>" />
                 </div>
                 <div>
                     <label for="workout_time" class="block mb-1 font-semibold">Waktu</label>
-                    <input type="time" id="workout_time" name="workout_time" required class="w-full border border-gray-300 rounded px-3 py-2" value="<?=htmlspecialchars($_POST['workout_time'] ?? '')?>" />
+                    <input type="time" id="workout_time" name="workout_time" required class="w-full border border-gray-300 rounded px-3 py-2 text-gray-800" value="<?=htmlspecialchars($_POST['workout_time'] ?? '')?>" />
                 </div>
                 <div>
                     <label for="workout_type" class="block mb-1 font-semibold">Jenis Latihan</label>
-                    <input type="text" id="workout_type" name="workout_type" required placeholder="Contoh: Lari, Yoga, Angkat Beban" class="w-full border border-gray-300 rounded px-3 py-2" value="<?=htmlspecialchars($_POST['workout_type'] ?? '')?>" />
+                    <input type="text" id="workout_type" name="workout_type" required placeholder="Contoh: Lari, Yoga, Angkat Beban" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-800" value="<?=htmlspecialchars($_POST['workout_type'] ?? '')?>" />
                 </div>
             </div>
             <div class="mt-4">
                 <label for="notes" class="block mb-1 font-semibold">Catatan (opsional)</label>
-                <textarea id="notes" name="notes" rows="3" class="w-full border border-gray-300 rounded px-3 py-2"><?=htmlspecialchars($_POST['notes'] ?? '')?></textarea>
+                <textarea id="notes" name="notes" rows="3" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-800"><?=htmlspecialchars($_POST['notes'] ?? '')?></textarea>
             </div>
-            <button type="submit" class="mt-4 bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700 transition">Tambah Jadwal</button>
+            <button type="submit" class="mt-4 bg-[#acd696] text-white py-2 px-6 rounded hover:bg-[#6b8e6f] transition">Tambah Jadwal</button>
         </form>
 
         <section>
-            <h3 class="text-2xl font-semibold mb-4">Jadwal Anda</h3>
+            <h3 class="text-2xl font-semibold mb-4 text-gray-800">Jadwal Anda</h3>
             <?php if (count($schedules) === 0): ?>
                 <p class="text-gray-600">Belum ada jadwal latihan yang dibuat.</p>
             <?php else: ?>
-        <table class="w-full bg-white rounded shadow overflow-hidden">
-            <thead class="bg-blue-600 text-white">
-                <tr>
-                    <th class="text-left px-4 py-2">Tanggal</th>
-                    <th class="text-left px-4 py-2">Waktu</th>
-                    <th class="text-left px-4 py-2">Jenis Latihan</th>
-                    <th class="text-left px-4 py-2">Catatan</th>
-                    <th class="text-left px-4 py-2">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($schedules as $schedule): ?>
-                    <tr class="border-b border-gray-200">
-                        <td class="px-4 py-2"><?=htmlspecialchars($schedule['workout_date'])?></td>
-                        <td class="px-4 py-2"><?=htmlspecialchars($schedule['workout_time'])?></td>
-                        <td class="px-4 py-2"><?=htmlspecialchars($schedule['workout_type'])?></td>
-                        <td class="px-4 py-2"><?=htmlspecialchars($schedule['notes'])?></td>
-                        <td class="px-4 py-2">
-                            <button onclick="confirmDone('<?=htmlspecialchars($schedule['id'])?>')" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 transition mr-2">Konfirmasi Selesai</button>
-                            <form method="POST" action="schedule.php" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal latihan ini?');">
-                                <input type="hidden" name="delete_schedule_id" value="<?=htmlspecialchars($schedule['id'])?>" />
-                                <button type="submit" class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-</table>
-    <?php endif; ?>
-</section>
-</main>
-<form method="POST" action="schedule.php" class="mt-6">
-    <input type="hidden" name="schedule_id" id="schedule_id" value="" />
-    <input type="hidden" name="confirm_done" value="1" />
-</form>
-<script>
-    function confirmDone(scheduleId) {
-        if (confirm('Apakah Anda sudah melakukan latihan ini?')) {
-            document.getElementById('schedule_id').value = scheduleId;
-            document.forms[document.forms.length - 1].submit();
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded shadow overflow-hidden">
+                        <thead class="bg-[#7dbbd9] text-white">
+                            <tr>
+                                <th class="text-left px-4 py-2">Tanggal</th>
+                                <th class="text-left px-4 py-2">Waktu</th>
+                                <th class="text-left px-4 py-2">Jenis Latihan</th>
+                                <th class="text-left px-4 py-2">Catatan</th>
+                                <th class="text-left px-4 py-2">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($schedules as $schedule): ?>
+                                <tr class="border-b border-gray-200">
+                                    <td class="px-4 py-2 text-gray-800"><?=htmlspecialchars($schedule['workout_date'])?></td>
+                                    <td class="px-4 py-2 text-gray-800"><?=htmlspecialchars($schedule['workout_time'])?></td>
+                                    <td class="px-4 py-2 text-gray-800"><?=htmlspecialchars($schedule['workout_type'])?></td>
+                                    <td class="px-4 py-2 text-gray-800"><?=htmlspecialchars($schedule['notes'])?></td>
+                                    <td class="px-4 py-2 flex items-center space-x-2">
+                                        <button onclick="confirmDone('<?=htmlspecialchars($schedule['id'])?>')" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 transition">Selesai</button>
+                                        <form method="POST" action="schedule.php" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal latihan ini?');">
+                                            <input type="hidden" name="delete_schedule_id" value="<?=htmlspecialchars($schedule['id'])?>" />
+                                            <button type="submit" class="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 transition">Hapus</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+    </main>
+    <form method="POST" action="schedule.php" class="mt-6" id="confirmDoneForm">
+        <input type="hidden" name="schedule_id" id="schedule_id" value="" />
+        <input type="hidden" name="confirm_done" value="1" />
+    </form>
+    <script>
+        function confirmDone(scheduleId) {
+            if (confirm('Apakah Anda sudah melakukan latihan ini? Ini akan dicatat sebagai progres.')) {
+                document.getElementById('schedule_id').value = scheduleId;
+                document.getElementById('confirmDoneForm').submit();
+            }
         }
-    }
-</script>
-<footer class="bg-gray-200 text-center p-4 text-sm text-gray-600">
-    &copy; 2024 Fitpulse. All rights reserved.
-</footer>
+    </script>
+    <footer class="bg-gray-200 text-center p-4 text-sm text-gray-600 mt-auto">
+        &copy; 2024 Fitpulse. All rights reserved.
+    </footer>
 </body>
 </html>
