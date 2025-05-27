@@ -166,11 +166,18 @@ if (empty($display_recommendations)) {
                     <p class="text-[#a0c4db]">Member</p>
                 </div>
             </div>
-             <a href="profile.php"
-                class="bg-[#acd696] text-white text-xs font-semibold py-1.5 px-4 rounded hover:bg-[#6b8e6f] transition mt-1"
-            >
-                Edit Profile
-            </a>
+            <div class="flex gap-2">
+                <a href="profile.php"
+                    class="bg-[#acd696] text-white text-xs font-semibold py-1.5 px-4 rounded hover:bg-[#6b8e6f] transition mt-1"
+                >
+                    Edit Profile
+                </a>
+                <a href="logout.php"
+                    class="bg-red-500 text-white text-xs font-semibold py-1.5 px-4 rounded hover:bg-red-600 transition mt-1"
+                >
+                    Log Out
+                </a>
+            </div>
         </div>
 
         <?php if ($errors): ?>
