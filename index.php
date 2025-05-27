@@ -2,13 +2,16 @@
 session_start();
 require_once 'config.php';
 
+// Ensure user is logged in. If not, redirect to login page.
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: landing.php');
     exit;
 }
 
+// Define user_id and username from session
+// This ensures $user_id and $username are always defined when used later in the script.
 $user_id = $_SESSION['user_id'];
-$username = $_SESSION['username'];
+$username = $_SESSION['username'] ?? 'Pengguna'; // Default value if username somehow isn't set
 
 $errors = [];
 $success = '';
@@ -16,16 +19,16 @@ $success = '';
 // Handle Schedule Workout form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['schedule_workout'])) {
     $workout_date = $_POST['schedule_date'] ?? '';
+    $workout_time = trim($_POST['schedule_time'] ?? '00:00'); // Added schedule_time input from previous versions, defaulted if not present
     $workout_type = trim($_POST['schedule_exercise'] ?? '');
-    $workout_time = '00:00'; // Default time if not provided in index page
-
+    
     if (!$workout_date || !$workout_type) {
         $errors[] = 'Tanggal dan jenis latihan harus diisi.';
     } else {
         $schedules = readData(SCHEDULES_FILE);
         $new_schedule = [
             'id' => uniqid(),
-            'user_id' => $user_id,
+            'user_id' => $user_id, // $user_id is now guaranteed to be defined here
             'workout_date' => $workout_date,
             'workout_time' => $workout_time,
             'workout_type' => $workout_type,
@@ -51,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['log_workout'])) {
         $progress_logs = readData(PROGRESS_FILE);
         $new_log = [
             'id' => uniqid(),
-            'user_id' => $user_id,
+            'user_id' => $user_id, // $user_id is now guaranteed to be defined here
             'log_date' => $log_date,
             'progress' => "Latihan $workout_name selama $duration telah dilakukan.",
             'created_at' => date('c')
@@ -166,18 +169,11 @@ if (empty($display_recommendations)) {
                     <p class="text-[#a0c4db]">Member</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <a href="profile.php"
-                    class="bg-[#acd696] text-white text-xs font-semibold py-1.5 px-4 rounded hover:bg-[#6b8e6f] transition mt-1"
-                >
-                    Edit Profile
-                </a>
-                <a href="logout.php"
-                    class="bg-red-500 text-white text-xs font-semibold py-1.5 px-4 rounded hover:bg-red-600 transition mt-1"
-                >
-                    Log Out
-                </a>
-            </div>
+             <a href="profile.php"
+                class="bg-[#acd696] text-white text-xs font-semibold py-1.5 px-4 rounded hover:bg-[#6b8e6f] transition mt-1"
+            >
+                Edit Profile
+            </a>
         </div>
 
         <?php if ($errors): ?>
@@ -201,24 +197,39 @@ if (empty($display_recommendations)) {
             <form class="flex flex-col space-y-4 w-2/3" method="post" action="index.php">
                 <input type="hidden" name="schedule_workout" value="1">
                 <div class="relative">
+                    <label for="schedule_date" class="block mb-1 font-semibold text-white">Tanggal</label>
                     <input
                         type="date"
+                        id="schedule_date"
                         name="schedule_date"
-                        placeholder="Select date"
                         class="w-full rounded-md py-2 px-3 text-xs text-black placeholder:text-black/50"
                         value="<?= htmlspecialchars($_POST['schedule_date'] ?? date('Y-m-d')) ?>"
                         required
                     />
                     <i class="fas fa-calendar-alt absolute right-3 top-2.5 text-black text-xs"></i>
                 </div>
-                <input
-                    type="text"
-                    name="schedule_exercise"
-                    placeholder="What's the Exercise ?"
-                    class="w-full rounded-md py-2 px-3 text-xs text-black placeholder:text-black/50"
-                    value="<?= htmlspecialchars($_POST['schedule_exercise'] ?? '') ?>"
-                    required
-                />
+                <div class="relative">
+                    <label for="schedule_time" class="block mb-1 font-semibold text-white">Waktu</label>
+                    <input
+                        type="time"
+                        id="schedule_time"
+                        name="schedule_time"
+                        class="w-full rounded-md py-2 px-3 text-xs text-black placeholder:text-black/50"
+                        value="<?= htmlspecialchars($_POST['schedule_time'] ?? '') ?>"
+                    />
+                </div>
+                <div class="relative">
+                    <label for="schedule_exercise" class="block mb-1 font-semibold text-white">Jenis Latihan</label>
+                    <input
+                        type="text"
+                        id="schedule_exercise"
+                        name="schedule_exercise"
+                        placeholder="What's the Exercise ?"
+                        class="w-full rounded-md py-2 px-3 text-xs text-black placeholder:text-black/50"
+                        value="<?= htmlspecialchars($_POST['schedule_exercise'] ?? '') ?>"
+                        required
+                    />
+                </div>
                 <button
                     type="submit"
                     class="bg-white text-[#3a9ccf] text-xs font-semibold rounded-md py-1.5"
@@ -259,23 +270,31 @@ if (empty($display_recommendations)) {
             <h2 class="text-sm font-semibold mb-3">Log Your Workout</h2>
             <form class="flex flex-col md:flex-row md:items-center gap-3" method="post" action="index.php">
                 <input type="hidden" name="log_workout" value="1">
-                <input
-                    type="text"
-                    name="log_workout_name"
-                    placeholder="Workout Name"
-                    class="flex-1 rounded-md py-2 px-3 text-xs text-black placeholder:text-black/50"
-                    value="<?= htmlspecialchars($_POST['log_workout_name'] ?? '') ?>"
-                    required
-                />
-                <input
-                    type="text"
-                    name="log_duration"
-                    placeholder="Duration (e.g. 30 mins)"
-                    class="flex-1 rounded-md py-2 px-3 text-xs text-black placeholder:text-black/50"
-                    value="<?= htmlspecialchars($_POST['log_duration'] ?? '') ?>"
-                    required
-                />
-                <div class="flex gap-2">
+                <div class="relative">
+                    <label for="log_workout_name" class="block mb-1 font-semibold text-white">Nama Latihan</label>
+                    <input
+                        type="text"
+                        id="log_workout_name"
+                        name="log_workout_name"
+                        placeholder="Workout Name"
+                        class="flex-1 rounded-md py-2 px-3 text-xs text-black placeholder:text-black/50"
+                        value="<?= htmlspecialchars($_POST['log_workout_name'] ?? '') ?>"
+                        required
+                    />
+                </div>
+                <div class="relative">
+                    <label for="log_duration" class="block mb-1 font-semibold text-white">Durasi</label>
+                    <input
+                        type="text"
+                        id="log_duration"
+                        name="log_duration"
+                        placeholder="Duration (e.g. 30 mins)"
+                        class="flex-1 rounded-md py-2 px-3 text-xs text-black placeholder:text-black/50"
+                        value="<?= htmlspecialchars($_POST['log_duration'] ?? '') ?>"
+                        required
+                    />
+                </div>
+                <div class="flex gap-2 mt-auto">
                     <button
                         type="reset"
                         class="bg-white border border-gray-300 text-gray-700 text-xs rounded-md py-1.5 px-4"
