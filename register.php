@@ -1,64 +1,51 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once 'config.php'; //
 
 $errors = [];
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Ambil data dari form
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    // Simpan data ke session (bisa diganti ke database jika diperlukan)
-    $_SESSION['email'] = $email;
-    $_SESSION['password'] = $password;
-
-    // Redirect ke halaman personal_info.php
-    header("Location: index.php");
-    exit();
-}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
+    $username = trim($_POST['username'] ?? ''); //
+    $email = trim($_POST['email'] ?? ''); //
+    $password = $_POST['password'] ?? ''; //
+    $confirm_password = $_POST['confirm_password'] ?? ''; //
 
-    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
-        $errors[] = 'Semua field harus diisi.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'Email tidak valid.';
-    } elseif ($password !== $confirm_password) {
-        $errors[] = 'Password dan konfirmasi password tidak cocok.';
+    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) { //
+        $errors[] = 'Semua field harus diisi.'; //
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) { //
+        $errors[] = 'Email tidak valid.'; //
+    } elseif ($password !== $confirm_password) { //
+        $errors[] = 'Password dan konfirmasi password tidak cocok.'; //
     } else {
-        $users = readData(USERS_FILE);
+        $users = readData(USERS_FILE); //
 
         // Check if username or email already exists
-        foreach ($users as $user) {
-            if ($user['username'] === $username || $user['email'] === $email) {
-                $errors[] = 'Username atau email sudah digunakan.';
+        foreach ($users as $user) { //
+            if ($user['username'] === $username || $user['email'] === $email) { //
+                $errors[] = 'Username atau email sudah digunakan.'; //
                 break;
             }
         }
 
         if (empty($errors)) {
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            $password_hash = password_hash($password, PASSWORD_DEFAULT); //
             $new_user = [
-                'id' => uniqid(),
-                'username' => $username,
-                'email' => $email,
-                'password_hash' => $password_hash,
-                'fitness_level' => 'beginner',
-                'preferences' => '',
-                'created_at' => date('c'),
-                'updated_at' => date('c')
+                'id' => uniqid(), //
+                'username' => $username, //
+                'email' => $email, //
+                'password_hash' => $password_hash, //
+                'fitness_level' => 'beginner', //
+                'preferences' => '', //
+                'created_at' => date('c'), //
+                'updated_at' => date('c') //
             ];
-            $users[] = $new_user;
-            writeData(USERS_FILE, $users);
+            $users[] = $new_user; //
+            writeData(USERS_FILE, $users); //
 
-            $_SESSION['user_id'] = $new_user['id'];
-            $_SESSION['username'] = $username;
-            header('Location: index.php');
-            exit;
+            $_SESSION['user_id'] = $new_user['id']; //
+            $_SESSION['username'] = $username; //
+            header('Location: index.php'); //
+            exit; //
         }
     }
 }
@@ -77,6 +64,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
     function togglePassword(button) {
       const input = document.getElementById("password");
+      if (input.type === "password") {
+        input.type = "text";
+        button.textContent = "Hide";
+      } else {
+        input.type = "password";
+        button.textContent = "Show";
+      }
+    }
+    function toggleConfirmPassword(button) {
+      const input = document.getElementById("confirm_password");
       if (input.type === "password") {
         input.type = "text";
         button.textContent = "Hide";
@@ -104,9 +101,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" action="register.php" class="w-full space-y-5">
 
-      <input type="text" id="username" name="username" placeholder="enter email address"
+      <input type="text" id="username" name="username" placeholder="enter username"
         class="w-full px-5 py-3 rounded-full text-sm bg-white focus:outline-none focus:ring-2 focus:ring-lime-300"
         value="<?=htmlspecialchars($_POST['username'] ?? '')?>" required />
+
+      <input type="email" id="email" name="email" placeholder="enter email address"
+        class="w-full px-5 py-3 rounded-full text-sm bg-white focus:outline-none focus:ring-2 focus:ring-lime-300"
+        value="<?=htmlspecialchars($_POST['email'] ?? '')?>" required />
 
       <div class="relative">
         <input type="password" id="password" name="password" placeholder="enter password"
@@ -114,6 +115,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         required />
 
         <button type="button" onclick="togglePassword(this)"
+        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm text-lime-600 hover:underline focus:outline-none">
+        Show
+        </button>
+      </div>
+
+      <div class="relative">
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="confirm password"
+        class="w-full px-5 py-3 rounded-full text-sm bg-white focus:outline-none focus:ring-2 focus:ring-lime-300 pr-16"
+        required />
+
+        <button type="button" onclick="toggleConfirmPassword(this)"
         class="absolute right-4 top-1/2 transform -translate-y-1/2 text-sm text-lime-600 hover:underline focus:outline-none">
         Show
         </button>
@@ -127,11 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Have an account?
         <a href="login.php" class="text-lime-100 font-semibold hover:underline">Log in</a>
       </p>
-
-      <!-- <button type="button"
-        class="w-full bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-200 transition">
-        Sign in with Google
-      </button> -->
     </form>
 </body>
 </html>
